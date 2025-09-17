@@ -7,12 +7,14 @@
 
 #define PI 3.1415926535
 
+//initial position
 float rocket_x = 100.0f;
 float rocket_y = 370.0f;
 float rocket_angle_deg = 0.0f;
 float t_param = 0.0f;
 const float animation_speed = 0.001f;
 
+//Clipping window size
 float cam_left = 50, cam_right = 150;
 float cam_bottom = 250, cam_top = 450;
 
@@ -26,6 +28,7 @@ const float COLOR_ORANGE[]  = {0.9f, 0.3f, 0.1f};
 
 struct Point { int x, y; };
 
+// Bresenham Line Drawing Algorithm
 void drawLine(Point p0, Point p1, const float color[3]) {
     glColor3fv(color);
     int x0 = p0.x, y0 = p0.y;
@@ -45,6 +48,7 @@ void drawLine(Point p0, Point p1, const float color[3]) {
     }
 }
 
+// Scanline Fill Algorithm
 void scanlineFillPolygon(const std::vector<Point>& polygon, const float color[3]) {
     if(polygon.empty()) return;
     int minY = polygon[0].y, maxY = polygon[0].y;
@@ -71,6 +75,7 @@ void scanlineFillPolygon(const std::vector<Point>& polygon, const float color[3]
     }
 }
 
+// Midpoint Circle Drawing Algorithm
 void drawCircleOutline(int cx, int cy, int r, const float color[3]) {
     glColor3fv(color);
     int x = 0, y = r;
@@ -88,6 +93,7 @@ void drawCircleOutline(int cx, int cy, int r, const float color[3]) {
     }
 }
 
+// Scanline Fill Algorithm
 void drawFilledCircleScanline(int cx, int cy, int r, const float color[3]) {
     glColor3fv(color);
     for(int y=-r; y<=r; y++){
@@ -100,6 +106,7 @@ void drawFilledCircleScanline(int cx, int cy, int r, const float color[3]) {
     }
 }
 
+// Stars (Random pixel glow)
 void drawStars() {
     glColor3fv(COLOR_WHITE);
     glBegin(GL_POINTS);
@@ -107,6 +114,7 @@ void drawStars() {
     glEnd();
 }
 
+// Flames
 void drawFlames(Point baseL, Point baseR, float angle_deg, float scale) {
     float flame_angle_rad = (angle_deg - 90.0f) * PI / 180.0f;
     float dir_x = cos(flame_angle_rad);
@@ -122,6 +130,7 @@ void drawFlames(Point baseL, Point baseR, float angle_deg, float scale) {
     }
 }
 
+// Rocket
 void drawRocket(Point translate, float angle_deg, float scale){
     float rad = angle_deg * PI / 180.0f;
     float cosA = cos(rad), sinA = sin(rad);
@@ -153,7 +162,7 @@ void drawRocket(Point translate, float angle_deg, float scale){
     for(int i=0;i<exhaust.size();i++) drawLine(exhaust[i], exhaust[(i+1)%exhaust.size()], COLOR_DARKGREY);
 }
 
-
+//Planets
 void drawPlanets(){
     drawFilledCircleScanline(100, 300, 50, COLOR_BLUE);
     drawCircleOutline(100, 300, 50, COLOR_BLUE);
@@ -162,7 +171,7 @@ void drawPlanets(){
     drawCircleOutline(700, 300, 80, COLOR_RED);
 }
 
-
+//Display
 void display(){
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -180,7 +189,7 @@ void display(){
     glutSwapBuffers();
 }
 
-
+//Update rocket position (Scaling, rotation and transformation application)
 void update(int value){
     Point start={100,370}, end={700,400}, peak={400,550};
     if(t_param<1.0f){
@@ -218,7 +227,7 @@ int main(int argc, char** argv){
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(800,600);
     glutInitWindowPosition(100,100);
-    glutCreateWindow("Intersteallar 2.0");
+    glutCreateWindow("Interstellar 2.0");
     myInit();
     glutDisplayFunc(display);
     glutTimerFunc(25, update, 0);
