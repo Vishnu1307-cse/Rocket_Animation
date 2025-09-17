@@ -81,6 +81,25 @@ void drawLine(Point p0, Point p1, const float color[3]) {
     glEnd();
 }
 
+//center point circle drawing
+void drawCircleOutline(int cx, int cy, int r, const float color[3]) {
+    glColor3fv(color);
+    int x = 0, y = r;
+    int d = 1 - r;
+    while(y >= x) {
+        glBegin(GL_POINTS);
+        glVertex2i(cx + x, cy + y); glVertex2i(cx - x, cy + y);
+        glVertex2i(cx + x, cy - y); glVertex2i(cx - x, cy - y);
+        glVertex2i(cx + y, cy + x); glVertex2i(cx - y, cy + x);
+        glVertex2i(cx + y, cy - x); glVertex2i(cx - y, cy - x);
+        glEnd();
+        x++;
+        if(d < 0) d += 2*x + 1;
+        else { y--; d += 2*(x - y) + 1; }
+    }
+}
+
+
 // Scan line Fill
 void scanlineFillPolygon(const std::vector<Point>& polygon, const float color[3]) {
     int minY = polygon[0].y, maxY = polygon[0].y;
