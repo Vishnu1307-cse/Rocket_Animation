@@ -5,21 +5,17 @@
 #include <ctime>
 #include <algorithm>
 
-// ===================== CONSTANTS =====================
 #define PI 3.1415926535
 
-// Rocket animation state
 float rocket_x = 100.0f;
-float rocket_y = 370.0f;   // top of left planet
+float rocket_y = 370.0f;
 float rocket_angle_deg = 0.0f;
 float t_param = 0.0f;
 const float animation_speed = 0.001f;
 
-// Camera (clipping) state
 float cam_left = 50, cam_right = 150;
 float cam_bottom = 250, cam_top = 450;
 
-// ===================== COLORS =====================
 const float COLOR_BLACK[]   = {0.0f, 0.0f, 0.0f};
 const float COLOR_WHITE[]   = {1.0f, 1.0f, 1.0f};
 const float COLOR_RED[]     = {1.0f, 0.0f, 0.0f};
@@ -28,10 +24,8 @@ const float COLOR_DARKGREY[]= {0.3f, 0.3f, 0.3f};
 const float COLOR_BLUE[]    = {0.2f, 0.4f, 1.0f};
 const float COLOR_ORANGE[]  = {0.9f, 0.3f, 0.1f};
 
-// ===================== HELPERS =====================
 struct Point { int x, y; };
 
-// --- Bresenham Line ---
 void drawLine(Point p0, Point p1, const float color[3]) {
     glColor3fv(color);
     int x0 = p0.x, y0 = p0.y;
@@ -51,7 +45,6 @@ void drawLine(Point p0, Point p1, const float color[3]) {
     }
 }
 
-// --- Scanline Fill Polygon ---
 void scanlineFillPolygon(const std::vector<Point>& polygon, const float color[3]) {
     if(polygon.empty()) return;
     int minY = polygon[0].y, maxY = polygon[0].y;
@@ -78,7 +71,6 @@ void scanlineFillPolygon(const std::vector<Point>& polygon, const float color[3]
     }
 }
 
-// --- Midpoint Circle Outline ---
 void drawCircleOutline(int cx, int cy, int r, const float color[3]) {
     glColor3fv(color);
     int x = 0, y = r;
@@ -96,7 +88,6 @@ void drawCircleOutline(int cx, int cy, int r, const float color[3]) {
     }
 }
 
-// --- Scanline Fill Circle ---
 void drawFilledCircleScanline(int cx, int cy, int r, const float color[3]) {
     glColor3fv(color);
     for(int y=-r; y<=r; y++){
@@ -109,7 +100,6 @@ void drawFilledCircleScanline(int cx, int cy, int r, const float color[3]) {
     }
 }
 
-// --- Stars ---
 void drawStars() {
     glColor3fv(COLOR_WHITE);
     glBegin(GL_POINTS);
@@ -117,7 +107,6 @@ void drawStars() {
     glEnd();
 }
 
-// --- Flames ---
 void drawFlames(Point baseL, Point baseR, float angle_deg, float scale) {
     float flame_angle_rad = (angle_deg - 90.0f) * PI / 180.0f;
     float dir_x = cos(flame_angle_rad);
@@ -133,7 +122,6 @@ void drawFlames(Point baseL, Point baseR, float angle_deg, float scale) {
     }
 }
 
-// --- Rocket ---
 void drawRocket(Point translate, float angle_deg, float scale){
     float rad = angle_deg * PI / 180.0f;
     float cosA = cos(rad), sinA = sin(rad);
@@ -152,10 +140,7 @@ void drawRocket(Point translate, float angle_deg, float scale){
     Point exhaustBaseR = transform({15,-40});
 
     drawFlames(exhaustBaseL, exhaustBaseR, angle_deg, scale);
-
-    // Fill body white
     scanlineFillPolygon(body, COLOR_WHITE);
-    // Fill nose and fins red
     scanlineFillPolygon(nose, COLOR_RED);
     scanlineFillPolygon(leftFin, COLOR_RED);
     scanlineFillPolygon(rightFin, COLOR_RED);
@@ -168,7 +153,7 @@ void drawRocket(Point translate, float angle_deg, float scale){
     for(int i=0;i<exhaust.size();i++) drawLine(exhaust[i], exhaust[(i+1)%exhaust.size()], COLOR_DARKGREY);
 }
 
-// --- Planets ---
+
 void drawPlanets(){
     drawFilledCircleScanline(100, 300, 50, COLOR_BLUE);
     drawCircleOutline(100, 300, 50, COLOR_BLUE);
@@ -177,7 +162,7 @@ void drawPlanets(){
     drawCircleOutline(700, 300, 80, COLOR_RED);
 }
 
-// --- Display ---
+
 void display(){
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -195,7 +180,7 @@ void display(){
     glutSwapBuffers();
 }
 
-// --- Update animation ---
+
 void update(int value){
     Point start={100,370}, end={700,400}, peak={400,550};
     if(t_param<1.0f){
@@ -205,7 +190,6 @@ void update(int value){
         rocket_x = u*u*start.x + 2*u*t*peak.x + t*t*end.x;
         rocket_y = u*u*start.y + 2*u*t*peak.y + t*t*end.y;
 
-        // Negative parabolic angle: 0 → -90 → 0
         rocket_angle_deg = -360.0f * t_param * (1.0f - t_param);
 
         cam_left   = 50 - 50*t;
@@ -225,7 +209,7 @@ void update(int value){
     glutTimerFunc(16, update, 0);
 }
 
-// --- Setup ---
+
 void myInit(){ glClearColor(0,0,0,1); }
 
 int main(int argc, char** argv){
@@ -234,7 +218,7 @@ int main(int argc, char** argv){
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(800,600);
     glutInitWindowPosition(100,100);
-    glutCreateWindow("Space Scene Retro Style - Scanline Rocket");
+    glutCreateWindow("Intersteallar 2.0");
     myInit();
     glutDisplayFunc(display);
     glutTimerFunc(25, update, 0);
